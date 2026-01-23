@@ -1,17 +1,17 @@
+{% set name = "libva" %}
 {% set version = "2.23.0" %}
 
 package:
-  name: libva
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/intel/libva/archive/{{ version }}.tar.gz
+  url: https://github.com/intel/{{ name }}/archive/{{ version }}.tar.gz
   sha256: b10aceb30e93ddf13b2030eb70079574ba437be9b3b76065caf28a72c07e23e7
   patches:
     # https://github.com/conda-forge/libva-utils-feedstock/issues/36
     - 0001-Add-system-driver-locations.patch          # [linux64]
     - 0001-Add-system-driver-locations-aarch64.patch  # [aarch64]
-    - 0001-Add-system-driver-locations-ppc64le.patch  # [ppc64le]
 
 build:
   skip: true  # [osx]
@@ -27,7 +27,7 @@ requirements:
     - {{ compiler('c') }}
     - pkg-config
     - meson
-    - ninja
+    - ninja-base
   host:
     - libdrm           # [linux]
     - libgl-devel      # [linux]
@@ -43,26 +43,26 @@ requirements:
 
 test:
   commands:
-    - test -f $PREFIX/include/va/va.h                    # [unix]
-    - test -f $PREFIX/lib/libva.so                       # [unix]
-    - test -f $PREFIX/lib/libva.so.2                     # [unix]
-    - test -f $PREFIX/lib/pkgconfig/libva.pc             # [unix]
-    - test -f $PREFIX/include/va/va_drm.h                # [unix]
-    - test -f $PREFIX/lib/libva-drm.so                   # [unix]
-    - test -f $PREFIX/lib/libva-drm.so.2                 # [unix]
-    - test -f $PREFIX/lib/pkgconfig/libva-drm.pc         # [unix]
-    - test -f $PREFIX/include/va/va_glx.h                # [unix]
-    - test -f $PREFIX/lib/libva-glx.so                   # [unix]
-    - test -f $PREFIX/lib/libva-glx.so.2                 # [unix]
-    - test -f $PREFIX/lib/pkgconfig/libva-glx.pc         # [unix]
-    - test -f $PREFIX/include/va/va_wayland.h            # [unix]
-    - test -f $PREFIX/lib/libva-wayland.so               # [unix]
-    - test -f $PREFIX/lib/libva-wayland.so.2             # [unix]
-    - test -f $PREFIX/lib/pkgconfig/libva-wayland.pc     # [unix]
-    - test -f $PREFIX/include/va/va_x11.h                # [unix]
-    - test -f $PREFIX/lib/libva-x11.so                   # [unix]
-    - test -f $PREFIX/lib/libva-x11.so.2                 # [unix]
-    - test -f $PREFIX/lib/pkgconfig/libva-x11.pc         # [unix]
+    - test -f $PREFIX/include/va/va.h                       # [unix]
+    - test -f $PREFIX/lib/libva.so                          # [unix]
+    - test -f $PREFIX/lib/libva.so.2                        # [unix]
+    - test -f $PREFIX/lib/pkgconfig/libva.pc                # [unix]
+    - test -f $PREFIX/include/va/va_drm.h                   # [unix]
+    - test -f $PREFIX/lib/libva-drm.so                      # [unix]
+    - test -f $PREFIX/lib/libva-drm.so.2                    # [unix]
+    - test -f $PREFIX/lib/pkgconfig/libva-drm.pc            # [unix]
+    - test -f $PREFIX/include/va/va_glx.h                   # [unix]
+    - test -f $PREFIX/lib/libva-glx.so                      # [unix]
+    - test -f $PREFIX/lib/libva-glx.so.2                    # [unix]
+    - test -f $PREFIX/lib/pkgconfig/libva-glx.pc            # [unix]
+    - test -f $PREFIX/include/va/va_wayland.h               # [unix]
+    - test -f $PREFIX/lib/libva-wayland.so                  # [unix]
+    - test -f $PREFIX/lib/libva-wayland.so.2                # [unix]
+    - test -f $PREFIX/lib/pkgconfig/libva-wayland.pc        # [unix]
+    - test -f $PREFIX/include/va/va_x11.h                   # [unix]
+    - test -f $PREFIX/lib/libva-x11.so                      # [unix]
+    - test -f $PREFIX/lib/libva-x11.so.2                    # [unix]
+    - test -f $PREFIX/lib/pkgconfig/libva-x11.pc            # [unix]
     - if not exist %PREFIX%/Library/bin/va.dll exit 1       # [win]
     - if not exist %PREFIX%/Library/lib/va.lib exit 1       # [win]
     - if not exist %PREFIX%/Library/include/va/va.h exit 1  # [win]
@@ -73,12 +73,13 @@ about:
   license_family: MIT
   license_file: COPYING
   summary: Libva is an implementation for VA-API (Video Acceleration API)
-
   description: |
     VA-API is an open-source library and API specification, which provides
     access to graphics hardware acceleration capabilities for video processing.
     It consists of a main library and driver-specific acceleration backends
     for each supported hardware vendor.
+  dev_url: https://github.com/intel/libva
+  doc_url: https://github.com/intel/libva
 
 extra:
   recipe-maintainers:
