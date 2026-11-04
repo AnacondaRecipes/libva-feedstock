@@ -1,13 +1,13 @@
 {% set name = "libva" %}
-{% set version = "2.23.0" %}
+{% set version = "2.24.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/intel/{{ name }}/archive/{{ version }}.tar.gz
-  sha256: b10aceb30e93ddf13b2030eb70079574ba437be9b3b76065caf28a72c07e23e7
+  sha256: 0b4a3649ee8d683b9cce2ef094df4fb039d276c0cef7e49337c43d3b297b9f42
   patches:
     # https://github.com/conda-forge/libva-utils-feedstock/issues/36
     - 0001-Add-system-driver-locations.patch          # [linux64]
@@ -29,21 +29,25 @@ requirements:
     - meson
     - ninja-base
   host:
-    - libdrm           # [linux]
-    - libgl-devel      # [linux]
-    - libglx-devel     # [linux]
-    - libegl-devel     # [linux]
-    - wayland          # [linux]
-    - libxcb           # [linux]
-    - xorg-libx11      # [linux]
-    - xorg-libxext     # [linux]
-    - xorg-libxfixes   # [linux]
+    - libdrm {{ libdrm }}            # [linux]
+    - libgl-devel {{ libgl }}        # [linux]
+    - libglx-devel {{ libglx }}      # [linux]
+    - libegl-devel {{ libegl }}      # [linux]
+    - wayland {{ wayland }}          # [linux]
+    - libxcb {{ libxcb }}            # [linux]
+    - xorg-libx11 {{ xorg_libx11 }}  # [linux]
+    - xorg-libxext {{ xorg_libxext }}  # [linux]
+    - xorg-libxfixes {{ xorg_libxfixes }}  # [linux]
   run:
     - wayland-protocols  # [linux]
 
 test:
   commands:
+    # Upstream (intel/libva) ships no test suite of its own; the functional
+    # tests live in libva-utils, which is a separate feedstock. Only the
+    # installed artifacts can be verified here.
     - test -f $PREFIX/include/va/va.h                       # [unix]
+    - test -f $PREFIX/include/va/va_dec_vvc.h               # [unix]
     - test -f $PREFIX/lib/libva.so                          # [unix]
     - test -f $PREFIX/lib/libva.so.2                        # [unix]
     - test -f $PREFIX/lib/pkgconfig/libva.pc                # [unix]
@@ -86,3 +90,7 @@ extra:
     - gabm
     - hmaarrfk
     - ehfd
+  skip-lints:
+    # meson/ninja are the C build system for this package and belong to the
+    # build environment (they are needed there for cross-compilation).
+    - python_build_tools_in_host
